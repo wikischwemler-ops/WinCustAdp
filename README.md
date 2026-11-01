@@ -50,6 +50,11 @@ Einen Tweak deaktivieren: Datei mit `_` davor umbenennen.
 |---|---|
 | `Explorer-AutoSuggest-Off.reg` | Keine Vorschlagsliste in der Adressleiste / im Ausführen-Dialog |
 | `Explorer-InlineAutoComplete-Off.reg` | Keine Inline-Vervollständigung von Pfaden beim Tippen |
+| `Explorer-ClassicContextMenu-On.reg` | Rechtsklick zeigt sofort das klassische, vollständige Kontextmenü |
+| `Search-Web-Off.reg` | Suche ohne Web-/Bing-Ergebnisse und ohne Suchhighlights |
+| `Search-Cloud-Off.reg` | Suche ohne OneDrive-/Outlook-/Konto-Treffer, kein Suchverlauf |
+
+Die Suche findet danach noch Apps, Einstellungen und lokale Dateien. Dateien zusätzlich ausblenden: Einstellungen → Datenschutz und Sicherheit → *Windows durchsuchen* → **Klassisch**, unter *Suchorte anpassen* alles außer dem Startmenü abwählen.
 
 ## Rückgängig machen
 
