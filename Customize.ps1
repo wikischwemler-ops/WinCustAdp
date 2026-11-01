@@ -18,7 +18,7 @@
     Do not wait for a key press at the end (for unattended runs).
 
 .EXAMPLE
-    .\Install.ps1 -WhatIf
+    .\Customize.ps1 -WhatIf
     Shows what would be done without changing anything.
 #>
 [CmdletBinding(SupportsShouldProcess)]
@@ -47,7 +47,7 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
 # --- Logging -----------------------------------------------------------------
 $logDir = Join-Path $Root 'logs'
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
-Start-Transcript -Path (Join-Path $logDir "install-$Timestamp.log") | Out-Null
+Start-Transcript -Path (Join-Path $logDir "customize-$Timestamp.log") | Out-Null
 
 $failures = New-Object System.Collections.Generic.List[string]
 

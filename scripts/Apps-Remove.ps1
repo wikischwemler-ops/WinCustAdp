@@ -3,7 +3,7 @@
     - installed packages for all users (Remove-AppxPackage -AllUsers)
     - provisioned packages in the Windows image, so new users do not get them
 
-    Needs admin rights (Install.ps1 runs it elevated).
+    Needs admin rights (Customize.ps1 runs it elevated).
     Standalone: .\scripts\Apps-Remove.ps1 -WhatIf
 #>
 [CmdletBinding(SupportsShouldProcess)]

@@ -4,28 +4,28 @@ One-Click-Anpassungen für Windows 11.
 
 ## Ausführen
 
-**Doppelklick auf `Install.cmd`** – fertig.
+**Doppelklick auf `Customize.cmd`** – fertig.
 
 Das Skript fordert Admin-Rechte an, sichert die betroffenen Registry-Schlüssel, importiert alle Registry-Tweaks, führt alle Skripte aus und startet den Explorer neu.
 
 Optionen (über PowerShell):
 
 ```powershell
-.\Install.ps1 -WhatIf              # nur anzeigen, nichts ändern
-.\Install.ps1 -NoRestartExplorer   # Explorer nicht neu starten
-.\Install.ps1 -NoPause             # am Ende nicht auf Enter warten
+.\Customize.ps1 -WhatIf              # nur anzeigen, nichts ändern
+.\Customize.ps1 -NoRestartExplorer   # Explorer nicht neu starten
+.\Customize.ps1 -NoPause             # am Ende nicht auf Enter warten
 ```
 
 ## Struktur
 
 ```
 WinCustAdp/
-├── Install.cmd     One-Click-Starter (Doppelklick)
-├── Install.ps1     Master-Skript, führt alles aus
+├── Customize.cmd   One-Click-Starter (Doppelklick)
+├── Customize.ps1   Master-Skript, führt alles aus
 ├── registry/       .reg-Dateien, eine Funktion pro Datei
 ├── scripts/        .ps1-Dateien für alles, was .reg nicht kann
 ├── config/         Listen für die Skripte, z. B. zu entfernende Apps
-├── tools/          Hilfen fürs Repo selbst (nicht von Install.ps1 ausgeführt)
+├── tools/          Hilfen fürs Repo selbst (nicht von Customize.ps1 ausgeführt)
 ├── .githooks/      Prüfung der Branch-Namen beim Push
 ├── .github/        GitHub-Ruleset für Branch-Namen
 ├── backups/        (automatisch) Registry-Sicherung pro Lauf
