@@ -24,6 +24,7 @@ WinCustAdp/
 ├── Install.ps1     Master-Skript, führt alles aus
 ├── registry/       .reg-Dateien, eine Funktion pro Datei
 ├── scripts/        .ps1-Dateien für alles, was .reg nicht kann
+├── config/         Listen für die Skripte, z. B. zu entfernende Apps
 ├── tools/          Hilfen fürs Repo selbst (nicht von Install.ps1 ausgeführt)
 ├── .githooks/      Prüfung der Branch-Namen beim Push
 ├── .github/        GitHub-Ruleset für Branch-Namen
@@ -56,6 +57,20 @@ Einen Tweak deaktivieren: Datei mit `_` davor umbenennen.
 | `Search-Indexing-Classic.reg` | *Windows durchsuchen*: Indizierung „Klassisch“ (nur Bibliotheken und Desktop), Energieeinstellungen beim Indizieren ignorieren |
 
 Die Suche findet danach noch Apps, Einstellungen und lokale Dateien. Dateien zusätzlich ausblenden: Einstellungen → Datenschutz und Sicherheit → *Windows durchsuchen* → **Klassisch**, unter *Suchorte anpassen* alles außer dem Startmenü abwählen.
+
+## Apps entfernen
+
+`scripts/Apps-Remove.ps1` entfernt alle Apps aus [`config/apps-remove.json`](config/apps-remove.json) – für alle Benutzer und aus dem Windows-Abbild, damit sie für neue Benutzer nicht wiederkommen. Nicht installierte Apps werden übersprungen.
+
+App hinzufügen: Paketnamen in die Liste `remove` eintragen. Namen finden:
+
+```powershell
+Get-AppxPackage | Where-Object { -not $_.IsFramework } | Select-Object Name | Sort-Object Name
+```
+
+Platzhalter sind erlaubt, z. B. `"Microsoft.Xbox*"`. Einzeln testen (als Admin): `.\scripts\Apps-Remove.ps1 -WhatIf`
+
+Entfernte Apps lassen sich über den Microsoft Store neu installieren.
 
 ## Rückgängig machen
 
