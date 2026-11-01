@@ -1,8 +1,0 @@
-Windows Registry Editor Version 5.00
-
-; Folder right-click menu: remove the custom entry "Mit Beyond Compare vergleichen"
-; (runs %LOCALAPPDATA%\BeyondCompareKontext\bc_vergleich.vbs).
-; Beyond Compare's own entries ("Select Left Folder for Compare" ...) stay.
-; Undo: import the backup Customize.ps1 wrote to backups\<timestamp>\.
-
-[-HKEY_CURRENT_USER\Software\Classes\Directory\shell\BCVergleich]

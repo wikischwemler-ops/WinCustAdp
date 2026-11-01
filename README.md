@@ -52,7 +52,6 @@ Einen Tweak deaktivieren: Datei mit `_` davor umbenennen.
 | `Explorer-AutoSuggest-Off.reg` | Keine Vorschlagsliste in der Adressleiste / im Ausführen-Dialog |
 | `Explorer-InlineAutoComplete-Off.reg` | Keine Inline-Vervollständigung von Pfaden beim Tippen |
 | `Explorer-ClassicContextMenu-On.reg` | Rechtsklick zeigt sofort das klassische, vollständige Kontextmenü |
-| `Explorer-ContextMenu-BCVergleich-Remove.reg` | Eigenen Ordner-Eintrag „Mit Beyond Compare vergleichen“ entfernen |
 | `Search-Web-Off.reg` | Suche ohne Web-/Bing-Ergebnisse |
 | `Search-Permissions.reg` | *Suchberechtigungen*: SafeSearch aus, keine Cloud-Treffer (Microsoft-/Geschäftskonto), kein Suchverlauf, keine Suchhighlights |
 | `Search-Indexing-Classic.reg` | *Windows durchsuchen*: Indizierung „Klassisch“ (nur Bibliotheken und Desktop), Energieeinstellungen beim Indizieren ignorieren |
