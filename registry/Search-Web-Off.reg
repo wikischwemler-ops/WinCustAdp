@@ -1,0 +1,12 @@
+Windows Registry Editor Version 5.00
+
+; Start menu / taskbar search: no web and Bing results.
+; Apps, settings and local files are still found.
+; Search highlights are switched off in Search-Permissions.reg.
+; Undo: delete "DisableSearchBoxSuggestions", set "BingSearchEnabled"=1.
+
+[HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Explorer]
+"DisableSearchBoxSuggestions"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Search]
+"BingSearchEnabled"=dword:00000000

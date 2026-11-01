@@ -1,0 +1,19 @@
+Windows Registry Editor Version 5.00
+
+; Settings > Privacy & security > Searching Windows
+;   Find my files:                      Classic (libraries and desktop only,
+;                                       not the whole PC)
+;   Respect power settings when indexing: Off
+; Indexed locations follow the libraries (Desktop, Documents, Downloads,
+; Music, Pictures, Videos), wherever those folders are. Custom locations are
+; stored with machine-specific volume IDs, so they are not set here.
+; Only SYSTEM may write this key (admins have read access only), so
+; Customize.ps1 imports it as SYSTEM because of the marker below.
+; Manual import: double-click does not work, use Customize.cmd.
+; Takes effect after restarting the "Windows Search" service or Windows.
+; RunAs: SYSTEM
+; Undo: "EnableFindMyFiles"=dword:00000001 (Enhanced), "RespectPowerModes"=dword:00000001.
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Search\Gather\Windows\SystemIndex]
+"EnableFindMyFiles"=dword:00000000
+"RespectPowerModes"=dword:00000000
