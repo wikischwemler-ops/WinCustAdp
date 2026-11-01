@@ -1,0 +1,8 @@
+Windows Registry Editor Version 5.00
+
+; Explorer address bar / Run dialog: no suggestion dropdown while typing
+; or when the address bar regains focus.
+; Undo: set "AutoSuggest"="yes" or delete the value.
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\AutoComplete]
+"AutoSuggest"="no"
