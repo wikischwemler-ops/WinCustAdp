@@ -1,0 +1,10 @@
+Windows Registry Editor Version 5.00
+
+; Template - files starting with "_" are skipped by Install.ps1.
+; Copy to <Area>-<Function>-<State>.reg, e.g. Taskbar-Widgets-Off.reg
+; One function per file. Describe what it does and how to undo it.
+
+; [HKEY_CURRENT_USER\Software\...]
+; "StringValue"="text"
+; "DwordValue"=dword:00000001
+; "ValueToDelete"=-

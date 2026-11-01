@@ -1,0 +1,5 @@
+# Windows tools expect CRLF (cmd.exe breaks on LF-only batch files)
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.reg text eol=crlf
+*.md  text eol=crlf
