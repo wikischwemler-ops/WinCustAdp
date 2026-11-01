@@ -3,6 +3,8 @@ Windows Registry Editor Version 5.00
 ; Template - files starting with "_" are skipped by Customize.ps1.
 ; Copy to <Area>-<Function>-<State>.reg, e.g. Taskbar-Widgets-Off.reg
 ; One function per file. Describe what it does and how to undo it.
+; For keys only SYSTEM may write (e.g. Windows Search), add the line
+; "; RunAs: SYSTEM" - Customize.ps1 then imports the file as SYSTEM.
 
 ; [HKEY_CURRENT_USER\Software\...]
 ; "StringValue"="text"

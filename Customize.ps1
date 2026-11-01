@@ -70,6 +70,32 @@ function Invoke-Reg([string[]]$Arguments) {
     return $p.ExitCode
 }
 
+# Some keys (e.g. Windows Search) are writable only by SYSTEM, not by admins.
+# Imports the file through a one-off scheduled task running as SYSTEM.
+function Invoke-RegImportAsSystem([IO.FileInfo]$RegFile) {
+    $taskName = "WinCustAdp-RegImport-$Timestamp"
+    $action    = New-ScheduledTaskAction -Execute 'reg.exe' -Argument "import `"$($RegFile.FullName)`""
+    $principal = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest
+    Register-ScheduledTask -TaskName $taskName -Action $action -Principal $principal -Force | Out-Null
+    try {
+        Start-ScheduledTask -TaskName $taskName
+        $deadline = (Get-Date).AddSeconds(30)
+        do {
+            Start-Sleep -Milliseconds 500
+            $state = (Get-ScheduledTask -TaskName $taskName).State
+            $info  = Get-ScheduledTaskInfo -TaskName $taskName
+            # 267011 = task has not run yet
+        } while (($state -eq 'Running' -or $info.LastTaskResult -eq 267011) -and (Get-Date) -lt $deadline)
+        return $info.LastTaskResult
+    } finally {
+        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+    }
+}
+
+function Test-RunAsSystem([IO.FileInfo]$RegFile) {
+    return [bool](Select-String -Path $RegFile.FullName -Pattern '^;\s*RunAs:\s*SYSTEM' -Quiet)
+}
+
 function Backup-RegFileKeys([IO.FileInfo]$RegFile, [string]$BackupDir) {
     # Key lines look like [HKEY_...]; deletions look like [-HKEY_...]
     $keys = Select-String -Path $RegFile.FullName -Pattern '^\[-?(HKEY_[^\]]+)\]' |
@@ -99,9 +125,14 @@ if ($regFiles.Count -gt 0) {
 
     foreach ($file in $regFiles) {
         if (-not $PSCmdlet.ShouldProcess($file.Name, 'Import registry file')) { continue }
-        $exit = Invoke-Reg @('import', "`"$($file.FullName)`"")
+        $asSystem = Test-RunAsSystem $file
+        if ($asSystem) {
+            $exit = Invoke-RegImportAsSystem $file
+        } else {
+            $exit = Invoke-Reg @('import', "`"$($file.FullName)`"")
+        }
         if ($exit -eq 0) {
-            Write-Host "  [OK]   $($file.Name)" -ForegroundColor Green
+            Write-Host "  [OK]   $($file.Name)$(if ($asSystem) { ' (as SYSTEM)' })" -ForegroundColor Green
         } else {
             Write-Host "  [FAIL] $($file.Name) (exit code $exit)" -ForegroundColor Red
             $failures.Add("registry\$($file.Name)")
