@@ -24,6 +24,9 @@ WinCustAdp/
 ├── Install.ps1     Master-Skript, führt alles aus
 ├── registry/       .reg-Dateien, eine Funktion pro Datei
 ├── scripts/        .ps1-Dateien für alles, was .reg nicht kann
+├── tools/          Hilfen fürs Repo selbst (nicht von Install.ps1 ausgeführt)
+├── .githooks/      Prüfung der Branch-Namen beim Push
+├── .github/        GitHub-Ruleset für Branch-Namen
 ├── backups/        (automatisch) Registry-Sicherung pro Lauf
 └── logs/           (automatisch) Protokoll pro Lauf
 ```
@@ -53,6 +56,15 @@ Einen Tweak deaktivieren: Datei mit `_` davor umbenennen.
 Jeder Lauf legt unter `backups/<Zeitstempel>/` den vorherigen Zustand der betroffenen Schlüssel ab.
 Die gewünschte `.reg`-Datei dort per Doppelklick importieren.
 Existierte ein Schlüssel vorher nicht, gibt es keine Sicherung – dann hilft der „Undo“-Hinweis in der Tweak-Datei.
+
+## Branch-Namen
+
+Neue Branches nur zweistufig als `xxx/yyy`, klein geschrieben: `xxx` = Präfix (`feat`, `fix`, `docs`, `chore` … oder der Windows-Benutzer wie `hp840g6`), `yyy` = funktionaler Name, z. B. `feat/taskbar-tweaks`. Flache Namen (`fix-taskbar`) und tiefere (`feat/a/b`) werden beim Anlegen abgelehnt.
+
+- **Regeln:** `.githooks/branch-rules.json`
+- **Lokal beim Push:** einmal je Klon `tools\git_hooks_einrichten.bat` ausführen (oder `git config core.hooksPath .githooks`).
+- **Auf GitHub (verbindlich):** Settings → Rules → Rulesets → New ruleset → **Import a ruleset** → `.github/rulesets/branch-names.json`.
+- Einzelnen Namen prüfen: `py .githooks/branch_check.py --name feat/taskbar-tweaks`
 
 ## Hinweis
 

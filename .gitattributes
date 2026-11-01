@@ -3,3 +3,7 @@
 *.cmd text eol=crlf
 *.reg text eol=crlf
 *.md  text eol=crlf
+*.bat text eol=crlf
+
+# Git hooks run in Git's sh, which breaks on CRLF
+.githooks/* text eol=lf
