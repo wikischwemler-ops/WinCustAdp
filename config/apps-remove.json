@@ -1,17 +1,21 @@
 {
   "description": "Apps removed by scripts/Apps-Remove.ps1 (for all users and from the Windows image, so they do not come back for new users). Use the package name from: Get-AppxPackage | Select-Object Name. Wildcards (*) are allowed.",
   "remove": [
+    "Clipchamp.Clipchamp",
     "Microsoft.549981C3F5F10",
     "Microsoft.BingNews",
+    "Microsoft.BingSearch",
     "Microsoft.BingWeather",
     "Microsoft.GamingApp",
     "Microsoft.GetHelp",
     "Microsoft.Getstarted",
     "Microsoft.MicrosoftSolitaireCollection",
+    "Microsoft.People",
     "Microsoft.ScreenSketch",
     "Microsoft.SunandSandPREMIUM",
     "Microsoft.Todos",
     "Microsoft.Windows.DevHome",
+    "Microsoft.WindowsFeedbackHub",
     "Microsoft.WindowsMaps",
     "Microsoft.Xbox.TCUI",
     "Microsoft.XboxGameOverlay",
@@ -19,7 +23,9 @@
     "Microsoft.XboxIdentityProvider",
     "Microsoft.XboxSpeechToTextOverlay",
     "Microsoft.YourPhone",
+    "Microsoft.ZuneVideo",
     "MicrosoftCorporationII.MicrosoftFamily",
+    "MicrosoftCorporationII.QuickAssist",
     "MSTeams"
   ]
 }
