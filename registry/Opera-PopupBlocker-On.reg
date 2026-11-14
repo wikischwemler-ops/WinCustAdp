@@ -1,0 +1,19 @@
+Windows Registry Editor Version 5.00
+
+; Opera: hide cookie banners and newsletter/discount popups with uBlock Origin.
+; Sets uBlock Origin's filter lists by policy: the defaults plus EasyList
+; Germany, cookie notices, newsletter notices, popup overlays and other
+; annoyances. Cookie banners are hidden, nothing is accepted.
+; uBlock Origin itself must be installed once from the Opera add-ons store
+; (manual\Opera-PopupBlocker.cmd opens the page). Opera reads the
+; ExtensionInstallForcelist policy but does not install from it on a PC
+; that is not managed by a company (tested with Opera 139).
+; Takes effect after restarting Opera.
+; Undo: delete HKLM\SOFTWARE\Policies\OperaSoftware\Opera\3rdparty, restart Opera.
+
+; Earlier versions of this file: force-install entries that Opera ignores.
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\OperaSoftware\Opera\ExtensionInstallForcelist]
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\OperaSoftware\Opera\3rdparty\extensions\ddkjiahejlhfcafbddmgiahcphecmpfh]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\OperaSoftware\Opera\3rdparty\extensions\kccohkcpppjjkkjppopfnflnebibpida\policy\toOverwrite]
+"filterLists"="[\"user-filters\", \"ublock-filters\", \"ublock-badware\", \"ublock-privacy\", \"ublock-unbreak\", \"ublock-quick-fixes\", \"easylist\", \"easyprivacy\", \"urlhaus-1\", \"plowe-0\", \"DEU-0\", \"fanboy-cookiemonster\", \"ublock-cookies-easylist\", \"adguard-cookies\", \"ublock-cookies-adguard\", \"easylist-newsletters\", \"adguard-popup-overlays\", \"easylist-annoyances\", \"ublock-annoyances\"]"

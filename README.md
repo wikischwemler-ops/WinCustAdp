@@ -52,11 +52,18 @@ Einen Tweak deaktivieren: Datei mit `_` davor umbenennen.
 | `Explorer-AutoSuggest-Off.reg` | Keine Vorschlagsliste in der Adressleiste / im Ausführen-Dialog |
 | `Explorer-InlineAutoComplete-Off.reg` | Keine Inline-Vervollständigung von Pfaden beim Tippen |
 | `Explorer-ClassicContextMenu-On.reg` | Rechtsklick zeigt sofort das klassische, vollständige Kontextmenü |
+| `Opera-PopupBlocker-On.reg` | Opera: uBlock Origin blendet Cookie-Banner, Newsletter- und Rabatt-Popups aus (Filterlisten per Richtlinie; uBlock Origin einmal installieren, siehe unten) |
 | `Search-Web-Off.reg` | Suche ohne Web-/Bing-Ergebnisse |
 | `Search-Permissions.reg` | *Suchberechtigungen*: SafeSearch aus, keine Cloud-Treffer (Microsoft-/Geschäftskonto), kein Suchverlauf, keine Suchhighlights |
 | `Search-Indexing-Classic.reg` | *Windows durchsuchen*: Indizierung „Klassisch“ (nur Bibliotheken und Desktop), Energieeinstellungen beim Indizieren ignorieren |
 
 Die Suche findet danach noch Apps, Einstellungen und lokale Dateien. Dateien zusätzlich ausblenden: Einstellungen → Datenschutz und Sicherheit → *Windows durchsuchen* → **Klassisch**, unter *Suchorte anpassen* alles außer dem Startmenü abwählen.
+
+## Opera ohne Cookie-Banner und Popups
+
+**Doppelklick auf `manual/Opera-PopupBlocker.cmd`** – jederzeit wiederholbar. Setzt die Filterlisten von uBlock Origin per Richtlinie (Standardlisten, EasyList Germany, Cookie-Hinweise, Newsletter, Overlays, sonstige Störer) und startet Opera neu. Fehlt uBlock Origin noch, öffnet sich die Seite im Opera-Add-on-Store: einmal „Zu Opera hinzufügen“ klicken, Opera neu starten.
+
+Cookie-Banner werden nur ausgeblendet, nichts wird akzeptiert. Funktioniert eine Seite danach nicht richtig: uBlock-Symbol → großer Schalter, dann gilt für diese Seite keine Filterung.
 
 ## Apps entfernen
 
