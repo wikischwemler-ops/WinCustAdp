@@ -25,6 +25,7 @@ WinCustAdp/
 ├── registry/       .reg-Dateien, eine Funktion pro Datei
 ├── scripts/        .ps1-Dateien für alles, was .reg nicht kann
 ├── config/         Listen für die Skripte, z. B. zu entfernende Apps
+├── manual/         Skripte zum einzelnen Ausführen per Doppelklick (nicht in Customize)
 ├── tools/          Hilfen fürs Repo selbst (nicht von Customize.ps1 ausgeführt)
 ├── .githooks/      Prüfung der Branch-Namen beim Push
 ├── .github/        GitHub-Ruleset für Branch-Namen
@@ -71,6 +72,21 @@ Get-AppxPackage | Where-Object { -not $_.IsFramework } | Select-Object Name | So
 Platzhalter sind erlaubt, z. B. `"Microsoft.Xbox*"`. Einzeln testen (als Admin): `.\scripts\Apps-Remove.ps1 -WhatIf`
 
 Entfernte Apps lassen sich über den Microsoft Store neu installieren.
+
+## Manuelle Skripte (`manual/`)
+
+Diese Skripte führt `Customize.cmd` **nicht** aus. Jedes wird einzeln per Doppelklick auf seine `.cmd`-Datei gestartet, fragt nach Admin-Rechten und lässt das Fenster offen, bis du Enter drückst.
+
+| Starter | Wirkung |
+|---|---|
+| `Edge-Remove.cmd` | Deinstalliert Microsoft Edge samt Autostart und Verknüpfungen und sperrt die Neuinstallation über Edge Update. WebView2 bleibt (brauchen Windows und viele Apps). |
+| `Apps-Remove.cmd` | Entfernt die Apps aus `config/apps-remove.json` – wie in Customize, nur einzeln. |
+
+**Edge erst am Ende entfernen:** Nach einer Neuinstallation ist Edge der einzige Weg, einen anderen Browser herunterzuladen. `Edge-Remove` bricht deshalb ab, solange kein anderer Browser installiert ist. Reihenfolge: anderen Browser installieren, dann `Edge-Remove.cmd`. Bringt ein großes Windows-Update Edge zurück, einfach erneut ausführen.
+
+Nur anzeigen, was passieren würde: `manual\Edge-Remove.cmd -WhatIf`
+
+Neues manuelles Skript: `.ps1` in `manual/` ablegen und eine `.cmd` daneben nach dem Muster von `Edge-Remove.cmd` anlegen.
 
 ## Rückgängig machen
 
