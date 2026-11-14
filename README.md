@@ -59,9 +59,9 @@ Einen Tweak deaktivieren: Datei mit `_` davor umbenennen.
 
 Die Suche findet danach noch Apps, Einstellungen und lokale Dateien. Dateien zusätzlich ausblenden: Einstellungen → Datenschutz und Sicherheit → *Windows durchsuchen* → **Klassisch**, unter *Suchorte anpassen* alles außer dem Startmenü abwählen.
 
-## Opera ohne Cookie-Banner und Popups
+## Opera ohne Cookie-Banner, Popups und Split Screen
 
-**Doppelklick auf `manual/Opera-PopupBlocker.cmd`** – jederzeit wiederholbar. Setzt die Filterlisten von uBlock Origin per Richtlinie (Standardlisten, EasyList Germany, Cookie-Hinweise, Newsletter, Overlays, sonstige Störer) und startet Opera neu. Fehlt uBlock Origin noch, öffnet sich die Seite im Opera-Add-on-Store: einmal „Zu Opera hinzufügen“ klicken, Opera neu starten.
+**Doppelklick auf `manual/Opera-PopupBlocker.cmd`** – jederzeit wiederholbar. Schaltet *Split Screen* ab (zwei Tabs nebeneinander in einem Fenster, auch nicht mehr per Tab-Ziehen; über `manual/opera_prefs.py`, braucht Python), setzt die Filterlisten von uBlock Origin per Richtlinie (Standardlisten, EasyList Germany, Cookie-Hinweise, Newsletter, Overlays, sonstige Störer) und startet Opera neu. Fehlt uBlock Origin noch, öffnet sich die Seite im Opera-Add-on-Store: einmal „Zu Opera hinzufügen“ klicken, Opera neu starten.
 
 Cookie-Banner werden nur ausgeblendet, nichts wird akzeptiert. Funktioniert eine Seite danach nicht richtig: uBlock-Symbol → großer Schalter, dann gilt für diese Seite keine Filterung.
 
