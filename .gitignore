@@ -1,3 +1,9 @@
 # Created by Install.ps1 on each run
 logs/
 backups/
+
+# NFC CR95HF
+nfc-cr95hf/firmware/libopencm3/
+nfc-cr95hf/firmware/build/
+nfc-cr95hf/pc/bin/
+nfc-cr95hf/pc/obj/
