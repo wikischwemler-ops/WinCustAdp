@@ -27,4 +27,4 @@ nfc-cr95hf/pc/bin/Debug/net10.0-windows/Cr95hfTool.exe --write          # Port w
 dotnet run --project nfc-cr95hf/pc
 ```
 
-Der COM-Port des MB1054A wird beim Start automatisch erkannt und verbunden (USB-Kennung 0483:5740), danach **Lesen**, Hex-Werte ändern und **Zurückschreiben**. Grau markierte Blöcke (Herstellerdaten und Konfiguration) sind gesperrt.
+Das Programm findet das MB1054A selbst (USB-Kennung 0483:5740) und verbindet sich, auch nach erneutem Einstecken. Ein aufgelegter Tag wird automatisch gelesen und mit einer kurzen Animation angezeigt. Danach Hex-Werte ändern und **Zurückschreiben**. Grau markierte Blöcke (Herstellerdaten und Konfiguration) sind gesperrt.

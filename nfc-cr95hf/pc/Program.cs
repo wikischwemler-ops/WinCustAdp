@@ -82,6 +82,18 @@ class Cr95hf : IDisposable
 
     public Tag Read() => Read15693() ?? Read14443A() ?? Read14443B() ?? ReadFelica();
 
+    // Schnelle Anwesenheitspruefung (ISO 15693 und 14443A): UID oder null
+    public string Detect()
+    {
+        Proto(0x01, 0x0D);
+        var (c, r) = Tx(0x26, 0x01, 0x00);
+        if (c == 0x80 && r.Length >= 12 && (r[0] & 1) == 0) return Hex(r[2..10].Reverse());
+        Proto(0x02, 0x00, 0x01, 0x10, 0x00);
+        Cmd(0x09, 0x04, 0x3A, 0x00, 0x58, 0x04); Cmd(0x09, 0x04, 0x68, 0x01, 0x01, 0xD3);
+        var u = Select14443A(out _);
+        return u == null ? null : Hex(u);
+    }
+
     // ---------- ISO 15693 ----------
     Tag Read15693()
     {
@@ -182,32 +194,59 @@ class Cr95hf : IDisposable
 
 class MainForm : Form
 {
-    readonly ComboBox port = new() { Width = 100, DropDownStyle = ComboBoxStyle.DropDownList };
-    readonly Button bConn = new() { Text = "Verbinden", AutoSize = true }, bRead = new() { Text = "Lesen", AutoSize = true },
+    readonly Button bRead = new() { Text = "Neu lesen", AutoSize = true },
                     bWrite = new() { Text = "Zurückschreiben", AutoSize = true };
     readonly Label info = new() { AutoSize = true, Padding = new Padding(0, 6, 0, 0) };
     readonly DataGridView grid = new() { Dock = DockStyle.Fill, AllowUserToAddRows = false, RowHeadersVisible = false,
         AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, Font = new Font("Consolas", 10) };
     Cr95hf dev; Tag tag;
+    readonly TagSplash splash = new();
+    readonly System.Windows.Forms.Timer poll = new() { Interval = 700 };
+    string lastUid; bool busy;
 
     public MainForm()
     {
         Text = "CR95HF NFC-Tool (MB1054A)"; Width = 720; Height = 600;
         var top = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 36 };
-        top.Controls.AddRange([port, bConn, bRead, bWrite, info]);
+        top.Controls.AddRange([bRead, bWrite, info]);
         grid.Columns.Add("blk", "Block"); grid.Columns.Add("hex", "Hex (editierbar)"); grid.Columns.Add("asc", "ASCII");
         grid.Columns[0].ReadOnly = grid.Columns[2].ReadOnly = true; grid.Columns[0].FillWeight = 15;
-        Controls.Add(grid); Controls.Add(top);
-        port.Items.AddRange(SerialPort.GetPortNames());
-        var found = Cr95hf.FindPort();
-        if (found != null) port.SelectedItem = found; else if (port.Items.Count > 0) port.SelectedIndex = port.Items.Count - 1;
-        Shown += (_, _) => { if (found != null) bConn.PerformClick(); else info.Text = "MB1054A nicht gefunden – Port wählen"; };
-        bConn.Click += (_, _) => Run(() => { dev?.Dispose(); dev = new Cr95hf((string)port.SelectedItem); dev.Cmd(0xF0); info.Text = "Verbunden: " + dev.Idn(); });
+        Controls.Add(splash); Controls.Add(grid); Controls.Add(top);
+        // Hintergrund-Erkennung: neuer Tag -> automatisch lesen + Animation
+        poll.Tick += (_, _) =>
+        {
+            if (busy) return;
+            busy = true;
+            try
+            {
+                if (dev == null) // automatisch (neu) verbinden
+                {
+                    var p = Cr95hf.FindPort();
+                    if (p == null) { info.Text = "MB1054A nicht gefunden – bitte per USB anschließen"; return; }
+                    dev = new Cr95hf(p); dev.Cmd(0xF0); info.Text = $"Verbunden ({p}): {dev.Idn()} – Tag auflegen";
+                    lastUid = null;
+                }
+                var u = dev.Detect(); dev.FieldOff();
+                if (u != null && u != lastUid) { ReadTag(); if (tag != null) splash.Play(tag.Type, "UID " + tag.Uid); }
+                else if (u == null && lastUid != null) info.Text = "Kein Tag – bitte auflegen";
+                lastUid = u;
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidOperationException)
+            { dev?.Dispose(); dev = null; info.Text = "Verbindung getrennt – warte auf MB1054A"; } // Board abgezogen
+            catch (TimeoutException) { }
+            finally { busy = false; }
+        };
+        poll.Start();
         bRead.Click += (_, _) => Run(ReadTag);
         bWrite.Click += (_, _) => Run(WriteTag);
     }
 
-    void Run(Action a) { try { a(); } catch (Exception e) { info.Text = "Fehler: " + e.Message; } }
+    void Run(Action a)
+    {
+        busy = true;
+        try { a(); } catch (Exception e) { info.Text = "Fehler: " + e.Message; }
+        finally { busy = false; }
+    }
 
     void ReadTag()
     {
@@ -242,5 +281,42 @@ class MainForm : Form
         ReadTag();
         int verified = changes.Count(ch => tag != null && ch.Item1 < tag.Blocks.Count && tag.Blocks[ch.Item1].SequenceEqual(ch.Item2));
         info.Text = $"Geschrieben und geprüft: {verified}/{changes.Count}" + (tag == null ? " (Tag weg)" : "  " + info.Text);
+    }
+}
+
+// Einblendung beim Auflegen eines Tags: pulsierende Funkringe, Typ und UID, blendet nach ~2 s aus
+class TagSplash : Control
+{
+    readonly System.Windows.Forms.Timer t = new() { Interval = 30 };
+    readonly Font big = new("Segoe UI", 14, FontStyle.Bold), small = new("Segoe UI", 10);
+    int frame; string title = "", sub = "";
+
+    public TagSplash()
+    {
+        DoubleBuffered = true; Visible = false; Size = new Size(360, 220);
+        t.Tick += (_, _) => { if (++frame > 70) { t.Stop(); Visible = false; } Invalidate(); };
+    }
+
+    public void Play(string a, string b)
+    {
+        title = a; sub = b; frame = 0;
+        Location = new Point((Parent.ClientSize.Width - Width) / 2, (Parent.ClientSize.Height - Height) / 2);
+        Visible = true; BringToFront(); t.Start();
+    }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        var g = e.Graphics; g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        g.Clear(Color.FromArgb(32, 36, 48));
+        float cx = Width / 2f, cy = 80;
+        for (int i = 0; i < 3; i++)
+        {
+            float r = ((frame + i * 12) % 36) * 2f + 10;
+            using var p = new Pen(Color.FromArgb(Math.Max(0, 255 - (int)(r * 3.4)), 80, 200, 255), 3);
+            g.DrawEllipse(p, cx - r, cy - r, 2 * r, 2 * r);
+        }
+        using (var b = new SolidBrush(Color.FromArgb(80, 200, 255))) g.FillEllipse(b, cx - 12, cy - 12, 24, 24);
+        TextRenderer.DrawText(g, "Tag erkannt: " + title, big, new Rectangle(0, 140, Width, 30), Color.White, TextFormatFlags.HorizontalCenter);
+        TextRenderer.DrawText(g, sub, small, new Rectangle(0, 178, Width, 24), Color.Silver, TextFormatFlags.HorizontalCenter);
     }
 }
