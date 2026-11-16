@@ -195,7 +195,9 @@ class Cr95hf : IDisposable
 class MainForm : Form
 {
     readonly Button bRead = new() { Text = "Neu lesen", AutoSize = true },
-                    bWrite = new() { Text = "Zurückschreiben", AutoSize = true };
+                    bWrite = new() { Text = "Zurückschreiben", AutoSize = true },
+                    bSave = new() { Text = "Speichern…", AutoSize = true },
+                    bClone = new() { Text = "Klonen aus Datei…", AutoSize = true };
     readonly Label info = new() { AutoSize = true, Padding = new Padding(0, 6, 0, 0) };
     readonly DataGridView grid = new() { Dock = DockStyle.Fill, AllowUserToAddRows = false, RowHeadersVisible = false,
         AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, Font = new Font("Consolas", 10) };
@@ -208,7 +210,7 @@ class MainForm : Form
     {
         Text = "CR95HF NFC-Tool (MB1054A)"; Width = 720; Height = 600;
         var top = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 36 };
-        top.Controls.AddRange([bRead, bWrite, info]);
+        top.Controls.AddRange([bRead, bWrite, bSave, bClone, info]);
         grid.Columns.Add("blk", "Block"); grid.Columns.Add("hex", "Hex (editierbar)"); grid.Columns.Add("asc", "ASCII");
         grid.Columns[0].ReadOnly = grid.Columns[2].ReadOnly = true; grid.Columns[0].FillWeight = 15;
         Controls.Add(splash); Controls.Add(grid); Controls.Add(top);
@@ -239,6 +241,8 @@ class MainForm : Form
         poll.Start();
         bRead.Click += (_, _) => Run(ReadTag);
         bWrite.Click += (_, _) => Run(WriteTag);
+        bSave.Click += (_, _) => Run(SaveTag);
+        bClone.Click += (_, _) => Run(CloneFromFile);
     }
 
     void Run(Action a)
@@ -272,9 +276,43 @@ class MainForm : Form
             if (d.Length != tag.BlockSize) throw new Exception($"Block {i}: {tag.BlockSize} Bytes erwartet");
             if (!d.SequenceEqual(tag.Blocks[i])) changes.Add((i, d));
         }
+        WriteChanges(changes, $"{changes.Count} Block/Blöcke auf den Tag schreiben?");
+    }
+
+    // Aktuellen Tag als Textdatei sichern (Zeile "# Typ UID", dann "Block:HEX")
+    void SaveTag()
+    {
+        if (tag == null || tag.Blocks.Count == 0) { info.Text = "Erst einen Tag auflegen"; return; }
+        using var d = new SaveFileDialog { Filter = "NFC-Abbild (*.nfc)|*.nfc", FileName = tag.Uid.Replace(" ", "") + ".nfc" };
+        if (d.ShowDialog() != DialogResult.OK) return;
+        File.WriteAllLines(d.FileName, [$"# {tag.Type} | UID {tag.Uid}", .. tag.Blocks.Select((b, i) => $"{i}:{Convert.ToHexString(b)}")]);
+        info.Text = "Gespeichert: " + Path.GetFileName(d.FileName);
+    }
+
+    // Gespeichertes Abbild auf den aufliegenden Tag schreiben (nur dessen beschreibbare Bloecke; UID bleibt)
+    void CloneFromFile()
+    {
+        if (tag == null || tag.LastWritable < tag.FirstWritable) { info.Text = "Erst einen beschreibbaren Ziel-Tag auflegen"; return; }
+        using var d = new OpenFileDialog { Filter = "NFC-Abbild (*.nfc)|*.nfc" };
+        if (d.ShowDialog() != DialogResult.OK) return;
+        var lines = File.ReadAllLines(d.FileName);
+        var head = lines.FirstOrDefault(l => l.StartsWith('#'))?.TrimStart('#', ' ') ?? "?";
+        var src = lines.Where(l => !l.StartsWith('#') && l.Contains(':')).Select(l => l.Split(':'))
+                       .ToDictionary(p => int.Parse(p[0]), p => Convert.FromHexString(p[1].Trim()));
+        var changes = new List<(int, byte[])>();
+        for (int i = tag.FirstWritable; i <= tag.LastWritable; i++)
+            if (src.TryGetValue(i, out var b) && b.Length == tag.BlockSize) changes.Add((i, b));
+        int lost = src.Keys.Count(k => k > tag.LastWritable && src[k].Any(x => x != 0));
+        WriteChanges(changes, $"Quelle: {head}\nZiel: {tag.Type} | UID {tag.Uid}\n\n{changes.Count} Blöcke ({tag.FirstWritable}–{tag.LastWritable}) schreiben?" +
+            (lost > 0 ? $"\n\nAchtung: {lost} Quellblöcke mit Daten passen nicht auf den Ziel-Tag." : "") +
+            "\nUID und Konfiguration des Ziel-Tags bleiben unverändert.");
+    }
+
+    void WriteChanges(List<(int, byte[])> changes, string question)
+    {
         if (changes.Count == 0) { info.Text = "Keine Änderungen"; return; }
-        if (MessageBox.Show($"{changes.Count} Block/Blöcke auf den Tag schreiben?", "Schreiben", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
-        var uid = tag.Uid; var old = tag;
+        if (MessageBox.Show(question, "Schreiben", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
+        var uid = tag.Uid;
         var again = dev.Read(); // Tag neu auswaehlen
         if (again == null || again.Uid != uid) { dev.FieldOff(); info.Text = "Tag nicht mehr da oder anderer Tag"; return; }
         int ok = changes.Count(ch => dev.WriteBlock(again, ch.Item1, ch.Item2));

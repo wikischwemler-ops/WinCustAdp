@@ -28,3 +28,5 @@ dotnet run --project nfc-cr95hf/pc
 ```
 
 Das Programm findet das MB1054A selbst (USB-Kennung 0483:5740) und verbindet sich, auch nach erneutem Einstecken. Ein aufgelegter Tag wird automatisch gelesen und mit einer kurzen Animation angezeigt. Danach Hex-Werte ändern und **Zurückschreiben**. Grau markierte Blöcke (Herstellerdaten und Konfiguration) sind gesperrt.
+
+**Klonen:** Quell-Tag auflegen, **Speichern…** (Textdatei `*.nfc`), Ziel-Tag auflegen, **Klonen aus Datei…**. Geschrieben werden nur die beschreibbaren Blöcke des Ziel-Tags; UID und Konfiguration bleiben unverändert.
