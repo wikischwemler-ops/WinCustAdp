@@ -18,7 +18,7 @@ Ermittelt am Board: USB-Pull-up über PB0 (aktiv low), CR95HF an SPI1 (PA4 NSS, 
 Test über die Kommandozeile (`--write` ändert den letzten Nutzerblock und stellt ihn wieder her):
 
 ```bash
-nfc-cr95hf/pc/bin/Debug/net10.0-windows/Cr95hfTool.exe COM11 --write
+nfc-cr95hf/pc/bin/Debug/net10.0-windows/Cr95hfTool.exe --write          # Port wird automatisch erkannt, optional COMx angeben
 ```
 
 ## PC-Software
@@ -27,4 +27,4 @@ nfc-cr95hf/pc/bin/Debug/net10.0-windows/Cr95hfTool.exe COM11 --write
 dotnet run --project nfc-cr95hf/pc
 ```
 
-COM-Port wählen, dann **Verbinden**, **Lesen**, Hex-Werte ändern und **Zurückschreiben**. Grau markierte Blöcke (Herstellerdaten und Konfiguration) sind gesperrt.
+Der COM-Port des MB1054A wird beim Start automatisch erkannt und verbunden (USB-Kennung 0483:5740), danach **Lesen**, Hex-Werte ändern und **Zurückschreiben**. Grau markierte Blöcke (Herstellerdaten und Konfiguration) sind gesperrt.

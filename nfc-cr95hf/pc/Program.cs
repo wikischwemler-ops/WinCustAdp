@@ -14,8 +14,10 @@ static class Program
     // Kommandozeilentest: Cr95hfTool COM11 [--write]  (Schreibtest aendert einen Nutzerblock und stellt ihn wieder her)
     static void Test(string[] a)
     {
-        using var d = new Cr95hf(a[0]); d.Cmd(0xF0);
-        Console.WriteLine("Leser: " + d.Idn());
+        var portName = a.FirstOrDefault(x => x.StartsWith("COM", StringComparison.OrdinalIgnoreCase)) ?? Cr95hf.FindPort();
+        if (portName == null) { Console.WriteLine("MB1054A nicht gefunden"); return; }
+        using var d = new Cr95hf(portName); d.Cmd(0xF0);
+        Console.WriteLine($"Leser an {portName}: " + d.Idn());
         var t = d.Read(); d.FieldOff();
         if (t == null) { Console.WriteLine("Kein Tag"); return; }
         Console.WriteLine($"{t.Type}  UID {t.Uid}  {t.Blocks.Count} Bloecke a {t.BlockSize} Byte, schreibbar {t.FirstWritable}..{t.LastWritable}");
@@ -45,6 +47,16 @@ class Cr95hf : IDisposable
     readonly SerialPort sp;
     public Cr95hf(string port) { sp = new SerialPort(port, 115200) { ReadTimeout = 1500, DtrEnable = true }; sp.Open(); }
     public void Dispose() => sp.Dispose();
+
+    // Sucht den COM-Port der MB1054A-Bruecke (USB VID 0483 / PID 5740) in der Registry
+    public static string FindPort()
+    {
+        using var k = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Enum\USB\VID_0483&PID_5740");
+        var present = SerialPort.GetPortNames();
+        foreach (var s in k?.GetSubKeyNames() ?? [])
+            if (k.OpenSubKey(s + @"\Device Parameters")?.GetValue("PortName") is string p && present.Contains(p)) return p;
+        return null;
+    }
 
     public (byte code, byte[] data) Cmd(byte cmd, params byte[] d)
     {
@@ -186,7 +198,10 @@ class MainForm : Form
         grid.Columns.Add("blk", "Block"); grid.Columns.Add("hex", "Hex (editierbar)"); grid.Columns.Add("asc", "ASCII");
         grid.Columns[0].ReadOnly = grid.Columns[2].ReadOnly = true; grid.Columns[0].FillWeight = 15;
         Controls.Add(grid); Controls.Add(top);
-        port.Items.AddRange(SerialPort.GetPortNames()); if (port.Items.Count > 0) port.SelectedIndex = port.Items.Count - 1;
+        port.Items.AddRange(SerialPort.GetPortNames());
+        var found = Cr95hf.FindPort();
+        if (found != null) port.SelectedItem = found; else if (port.Items.Count > 0) port.SelectedIndex = port.Items.Count - 1;
+        Shown += (_, _) => { if (found != null) bConn.PerformClick(); else info.Text = "MB1054A nicht gefunden – Port wählen"; };
         bConn.Click += (_, _) => Run(() => { dev?.Dispose(); dev = new Cr95hf((string)port.SelectedItem); dev.Cmd(0xF0); info.Text = "Verbunden: " + dev.Idn(); });
         bRead.Click += (_, _) => Run(ReadTag);
         bWrite.Click += (_, _) => Run(WriteTag);
