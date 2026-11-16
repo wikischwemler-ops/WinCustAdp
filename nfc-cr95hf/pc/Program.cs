@@ -38,6 +38,8 @@ class Tag
 {
     public string Type = "", Uid = "";
     public int BlockSize = 4, FirstWritable = 0, LastWritable = -1;
+    public HashSet<int> Locked = new();   // per Sperrbits dauerhaft schreibgeschuetzt
+    public bool CanWrite(int i) => i >= FirstWritable && i <= LastWritable && !Locked.Contains(i);
     public List<byte[]> Blocks = new();
     public bool Is15693;
 }
@@ -165,6 +167,11 @@ class Cr95hf : IDisposable
         }
         Select14443A(out _); // nach NAK (z. B. geschuetzte Konfigseiten) ist der Tag im Ruhezustand
         t.FirstWritable = 4; t.LastWritable = Math.Min(t.LastWritable, t.Blocks.Count - 1);
+        if (t.Blocks.Count > 2) // statische Sperrbytes (Block 2, Byte 2/3): Bit 4-7 -> Seiten 4-7, Byte 3 -> Seiten 8-15
+        {
+            int l0 = t.Blocks[2][2], l1 = t.Blocks[2][3];
+            for (int p = 4; p < 16; p++) if (((p < 8 ? l0 >> p : l1 >> (p - 8)) & 1) != 0) t.Locked.Add(p);
+        }
         return t;
     }
 
@@ -262,7 +269,7 @@ class MainForm : Form
             var b = tag.Blocks[i];
             int r = grid.Rows.Add(i.ToString(), string.Join(" ", b.Select(x => x.ToString("X2"))),
                 new string(b.Select(x => x is >= 32 and < 127 ? (char)x : '.').ToArray()));
-            if (i < tag.FirstWritable || i > tag.LastWritable) { grid.Rows[r].ReadOnly = true; grid.Rows[r].DefaultCellStyle.ForeColor = Color.Gray; }
+            if (!tag.CanWrite(i)) { grid.Rows[r].ReadOnly = true; grid.Rows[r].DefaultCellStyle.ForeColor = Color.Gray; }
         }
     }
 
@@ -271,7 +278,7 @@ class MainForm : Form
         if (tag == null || tag.Blocks.Count == 0) { info.Text = "Erst einen beschreibbaren Tag lesen"; return; }
         var changes = new List<(int, byte[])>();
         for (int i = tag.FirstWritable; i <= tag.LastWritable; i++)
-        {
+        { if (!tag.CanWrite(i)) continue;
             var d = ((string)grid.Rows[i].Cells[1].Value).Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(s => Convert.ToByte(s, 16)).ToArray();
             if (d.Length != tag.BlockSize) throw new Exception($"Block {i}: {tag.BlockSize} Bytes erwartet");
             if (!d.SequenceEqual(tag.Blocks[i])) changes.Add((i, d));
@@ -301,9 +308,9 @@ class MainForm : Form
                        .ToDictionary(p => int.Parse(p[0]), p => Convert.FromHexString(p[1].Trim()));
         var changes = new List<(int, byte[])>();
         for (int i = tag.FirstWritable; i <= tag.LastWritable; i++)
-            if (src.TryGetValue(i, out var b) && b.Length == tag.BlockSize) changes.Add((i, b));
+            if (tag.CanWrite(i) && src.TryGetValue(i, out var b) && b.Length == tag.BlockSize) changes.Add((i, b));
         int lost = src.Keys.Count(k => k > tag.LastWritable && src[k].Any(x => x != 0));
-        WriteChanges(changes, $"Quelle: {head}\nZiel: {tag.Type} | UID {tag.Uid}\n\n{changes.Count} Blöcke ({tag.FirstWritable}–{tag.LastWritable}) schreiben?" +
+        WriteChanges(changes, $"Quelle: {head}\nZiel: {tag.Type} | UID {tag.Uid}\n\n{changes.Count} Blöcke schreiben?" + (tag.Locked.Count > 0 ? $" ({tag.Locked.Count} gesperrte Blöcke werden übersprungen)" : "") +
             (lost > 0 ? $"\n\nAchtung: {lost} Quellblöcke mit Daten passen nicht auf den Ziel-Tag." : "") +
             "\nUID und Konfiguration des Ziel-Tags bleiben unverändert.");
     }
