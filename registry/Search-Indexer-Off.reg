@@ -1,0 +1,12 @@
+Windows Registry Editor Version 5.00
+
+; Windows Search indexer (service WSearch) disabled.
+; Taskbar search then only finds apps and settings, no files or folders.
+; Explorer's search box still works, but searches the folder directly (slower).
+; Outlook search may be slower or find less.
+; Takes effect after a restart (or: sc stop WSearch).
+; Undo: set Start to 2 (automatic), restart, or as admin:
+;   sc config WSearch start= delayed-auto & sc start WSearch
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WSearch]
+"Start"=dword:00000004

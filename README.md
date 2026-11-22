@@ -55,8 +55,9 @@ Einen Tweak deaktivieren: Datei mit `_` davor umbenennen.
 | `Search-Web-Off.reg` | Suche ohne Web-/Bing-Ergebnisse |
 | `Search-Permissions.reg` | *Suchberechtigungen*: SafeSearch aus, keine Cloud-Treffer (Microsoft-/Geschäftskonto), kein Suchverlauf, keine Suchhighlights |
 | `Search-Indexing-Classic.reg` | *Windows durchsuchen*: Indizierung „Klassisch“ (nur Bibliotheken und Desktop), Energieeinstellungen beim Indizieren ignorieren |
+| `Search-Indexer-Off.reg` | Windows-Suchdienst (Indizierung) aus: Taskleisten-Suche findet nur noch Apps und Einstellungen, keine Dateien |
 
-Die Suche findet danach noch Apps, Einstellungen und lokale Dateien. Dateien zusätzlich ausblenden: Einstellungen → Datenschutz und Sicherheit → *Windows durchsuchen* → **Klassisch**, unter *Suchorte anpassen* alles außer dem Startmenü abwählen.
+Die Suche findet danach nur noch Apps und Einstellungen. Die Suche im Explorer-Ordner funktioniert weiter, ist ohne Index aber langsamer; auch die Outlook-Suche kann langsamer werden. Wieder einschalten (als Admin): `sc config WSearch start= delayed-auto` und `sc start WSearch`.
 
 ## Apps entfernen
 
