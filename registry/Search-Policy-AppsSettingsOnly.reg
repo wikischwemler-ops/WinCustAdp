@@ -1,0 +1,25 @@
+Windows Registry Editor Version 5.00
+
+; Taskbar / Start search: only installed apps and Windows settings.
+; Machine-wide policies (stronger than the per-user Search-Web-Off.reg):
+;   - no web, Bing and Microsoft Store results, no search suggestions
+;   - no cloud content (OneDrive, Outlook, work account)
+;   - no search highlights / pictures in the search box, no location
+;   - no Copilot/Cortana in search
+; Files: Settings > Privacy & security > Searching Windows > Classic,
+; then remove every location under "Customize search locations".
+; Takes effect after signing out or restarting Windows.
+; Undo: delete the values below (or the whole key
+; HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search).
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Search]
+"DisableWebSearch"=dword:00000001
+"ConnectedSearchUseWeb"=dword:00000000
+"ConnectedSearchUseWebOverMeteredConnections"=dword:00000000
+"AllowCloudSearch"=dword:00000000
+"AllowSearchToUseLocation"=dword:00000000
+"EnableDynamicContentInWSB"=dword:00000000
+"AllowCortana"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer]
+"DisableSearchBoxSuggestions"=dword:00000001
