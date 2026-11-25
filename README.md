@@ -53,6 +53,7 @@ Einen Tweak deaktivieren: Datei mit `_` davor umbenennen.
 | `Explorer-AutoSuggest-Off.reg` | Keine Vorschlagsliste in der Adressleiste / im Ausführen-Dialog |
 | `Explorer-InlineAutoComplete-Off.reg` | Keine Inline-Vervollständigung von Pfaden beim Tippen |
 | `Explorer-ClassicContextMenu-On.reg` | Rechtsklick zeigt sofort das klassische, vollständige Kontextmenü |
+| `Explorer-NewTextDocument-On.reg` | Rechtsklick → Neu → *Textdokument* wieder da (fehlt, wenn Notepad nicht installiert ist) |
 | `Search-Web-Off.reg` | Suche ohne Web-/Bing-Ergebnisse |
 | `Search-Policy-AppsSettingsOnly.reg` | Richtlinien für alle Benutzer: keine Web-, Bing- und Microsoft-Store-Treffer, keine Vorschläge, keine Cloud-Inhalte, keine Suchhighlights, kein Standort, kein Cortana/Copilot in der Suche. Wirkt nach Ab- und Anmelden. |
 | `Search-Permissions.reg` | *Suchberechtigungen*: SafeSearch aus, keine Cloud-Treffer (Microsoft-/Geschäftskonto), kein Suchverlauf, keine Suchhighlights |
