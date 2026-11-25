@@ -1,0 +1,19 @@
+Windows Registry Editor Version 5.00
+
+; Right-click > New > Text Document
+; The entry belongs to Notepad. Without Notepad (uninstalled, or removed by
+; Windows) it disappears from the "New" menu. This brings it back for the
+; current user, independent of the editor that opens .txt files.
+; Takes effect after restarting Explorer (Customize.cmd does that).
+; Undo: delete HKCU\Software\Classes\.txt\ShellNew and the (Default)
+; value of HKCU\Software\Classes\txt_auto_file.
+
+[HKEY_CURRENT_USER\Software\Classes\.txt\ShellNew]
+"NullFile"=""
+
+; The menu shows the description of the file type that .txt points to.
+[HKEY_CURRENT_USER\Software\Classes\txt_auto_file]
+@="Text Document"
+
+; Forget the cached "New" menu so Explorer reads it again.
+[-HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Discardable\PostSetup\ShellNew]
