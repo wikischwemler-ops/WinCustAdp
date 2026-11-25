@@ -54,12 +54,19 @@ Einen Tweak deaktivieren: Datei mit `_` davor umbenennen.
 | `Explorer-InlineAutoComplete-Off.reg` | Keine Inline-Vervollständigung von Pfaden beim Tippen |
 | `Explorer-ClassicContextMenu-On.reg` | Rechtsklick zeigt sofort das klassische, vollständige Kontextmenü |
 | `Explorer-NewTextDocument-On.reg` | Rechtsklick → Neu → *Textdokument* wieder da (fehlt, wenn Notepad nicht installiert ist) |
+| `Opera-PopupBlocker-On.reg` | Opera: uBlock Origin blendet Cookie-Banner, Newsletter- und Rabatt-Popups aus (Filterlisten per Richtlinie; uBlock Origin einmal installieren, siehe unten) |
 | `Search-Web-Off.reg` | Suche ohne Web-/Bing-Ergebnisse |
 | `Search-Policy-AppsSettingsOnly.reg` | Richtlinien für alle Benutzer: keine Web-, Bing- und Microsoft-Store-Treffer, keine Vorschläge, keine Cloud-Inhalte, keine Suchhighlights, kein Standort, kein Cortana/Copilot in der Suche. Wirkt nach Ab- und Anmelden. |
 | `Search-Permissions.reg` | *Suchberechtigungen*: SafeSearch aus, keine Cloud-Treffer (Microsoft-/Geschäftskonto), kein Suchverlauf, keine Suchhighlights |
 | `Search-Indexing-Classic.reg` | *Windows durchsuchen*: Indizierung „Klassisch“ (nur Bibliotheken und Desktop), Energieeinstellungen beim Indizieren ignorieren |
 
 Die Suche findet danach noch Apps, Einstellungen und lokale Dateien. Dateien zusätzlich ausblenden: Einstellungen → Datenschutz und Sicherheit → *Windows durchsuchen* → **Klassisch**, unter *Suchorte anpassen* alles außer dem Startmenü abwählen. Per Registry geht das nicht zuverlässig: Die Richtlinie *PreventIndexingCertainPaths* wird vom Suchdienst ignoriert (getestet unter 25H2).
+
+## Opera ohne Cookie-Banner, Popups und Split Screen
+
+**Doppelklick auf `manual/Opera-PopupBlocker.cmd`** – jederzeit wiederholbar. Schaltet *Split Screen* ab (zwei Tabs nebeneinander in einem Fenster, auch nicht mehr per Tab-Ziehen; über `manual/opera_prefs.py`, braucht Python), setzt die Filterlisten von uBlock Origin per Richtlinie (Standardlisten, EasyList Germany, Cookie-Hinweise, Newsletter, Overlays, sonstige Störer) und startet Opera neu. Fehlt uBlock Origin noch, öffnet sich die Seite im Opera-Add-on-Store: einmal „Zu Opera hinzufügen“ klicken, Opera neu starten.
+
+Cookie-Banner werden nur ausgeblendet, nichts wird akzeptiert. Funktioniert eine Seite danach nicht richtig: uBlock-Symbol → großer Schalter, dann gilt für diese Seite keine Filterung.
 
 ## Apps entfernen
 
